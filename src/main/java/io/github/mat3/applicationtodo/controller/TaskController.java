@@ -38,6 +38,12 @@ public class TaskController {
         logger.info("Custom pageable");
         return ResponseEntity.ok(repository.findAll(page).getContent());
     }
+    @GetMapping("/tasks/{id}")
+    ResponseEntity<Task> readTask(@PathVariable int id){
+        return  repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PutMapping("/tasks/{id}")
     ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody @Valid Task toUpdate) {
