@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,6 +19,12 @@ public class TaskController {
 
     public TaskController(final TaskRepository repository) {
         this.repository = repository;
+    }
+
+    @PostMapping("/tasks")
+    ResponseEntity<Task> createTask(@RequestBody @Valid Task toCreate){
+        Task result = repository.save(toCreate);
+        return ResponseEntity.created(URI.create("/"+ result.getId())).body(result);
     }
 
     @GetMapping(value = "/tasks", params = {"!sort", "!page", "!size"})
