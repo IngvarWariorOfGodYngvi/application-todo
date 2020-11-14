@@ -1,0 +1,10 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: '/console'
+  datasource:
+    url: 'jdbc:h2:file:C:/Users/izebr/Downloads/application-todo/application-todo/todo-app-db'
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
