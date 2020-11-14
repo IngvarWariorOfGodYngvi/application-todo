@@ -8,3 +8,4 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password:
+my.prop: 'test'
