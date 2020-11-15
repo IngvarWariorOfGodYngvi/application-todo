@@ -23,9 +23,9 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
-    ResponseEntity<Task> createTask(@RequestBody @Valid Task toCreate){
+    ResponseEntity<Task> createTask(@RequestBody @Valid Task toCreate) {
         Task result = repository.save(toCreate);
-        return ResponseEntity.created(URI.create("/"+ result.getId())).body(result);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
     @GetMapping(value = "/tasks", params = {"!sort", "!page", "!size"})
@@ -39,9 +39,10 @@ public class TaskController {
         logger.info("Custom pageable");
         return ResponseEntity.ok(repository.findAll(page).getContent());
     }
+
     @GetMapping("/tasks/{id}")
-    ResponseEntity<Task> readTask(@PathVariable int id){
-        return  repository.findById(id)
+    ResponseEntity<Task> readTask(@PathVariable int id) {
+        return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -51,10 +52,14 @@ public class TaskController {
         if (!repository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        toUpdate.setId(id);
-        repository.save(toUpdate);
+        repository.findById(id)
+                .ifPresent(task -> {
+                    task.updateFrom(toUpdate);
+                    repository.save(task);
+                });
         return ResponseEntity.noContent().build();
     }
+
     @Transactional
     @PatchMapping("/tasks/{id}")
     public ResponseEntity<?> toggleTask(@PathVariable int id) {
