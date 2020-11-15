@@ -45,11 +45,11 @@ public class Task {
         this.done = done;
     }
 
-    LocalDateTime getDeadline() {
+    public LocalDateTime getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(LocalDateTime deadline) {
+    void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
     }
 
