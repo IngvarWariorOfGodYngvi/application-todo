@@ -1,5 +1,7 @@
-package io.github.mat3.applicationtodo.model;
+package io.github.mat3.applicationtodo.adapter;
 
+import io.github.mat3.applicationtodo.model.Task;
+import io.github.mat3.applicationtodo.model.TaskRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
