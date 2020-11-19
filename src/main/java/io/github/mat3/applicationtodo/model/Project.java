@@ -12,6 +12,6 @@ public class Project {
     private int id;
     @NotBlank(message = "Project's description must be not null")
     private String description;
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "project")
     private Set<TaskGroup> groups;
 }
