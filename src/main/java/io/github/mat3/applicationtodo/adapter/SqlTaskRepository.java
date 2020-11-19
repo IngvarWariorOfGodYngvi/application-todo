@@ -15,3 +15,4 @@ interface SqlTaskRepository extends TaskRepository, JpaRepository<Task, Integer>
 
 
 }
+
