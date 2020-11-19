@@ -9,6 +9,7 @@ import java.util.Set;
 public class TaskGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // auto wywala program, musi zostać identity,
     private int id;
     @NotBlank(message = "Task group's description must be not null")
     private String description;
@@ -56,4 +57,11 @@ public class TaskGroup {
         this.tasks = tasks;
     }
 
+    Project getProject() {
+        return project;
+    }
+
+    void setProject(Project project) {
+        this.project = project;
+    }
 }
