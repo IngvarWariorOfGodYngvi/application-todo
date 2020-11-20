@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,11 +27,13 @@ class ProjectServiceTest {
         var mockConfig = mock(TaskConfigurationProperties.class);
         when(mockConfig.getTemplate()).thenReturn(mockTemplate);
         //system under test
-        var toTest = new ProjectService(null,mockGroupRepository,mockConfig);
+        var toTest = new ProjectService(null, mockGroupRepository, mockConfig);
 
         //when
-        toTest.createGroup(LocalDateTime.now(),0);
-        //then
-        assertTrue(mockGroupRepository.existsByDoneIsFalseAndProject_Id(500));
+        var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
+        // then
+        assertThat(exception)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("one undone group");
     }
 }
