@@ -2,11 +2,15 @@ package io.github.mat3.applicationtodo.logic;
 
 import io.github.mat3.applicationtodo.TaskConfigurationProperties;
 import io.github.mat3.applicationtodo.model.ProjectRepository;
+import io.github.mat3.applicationtodo.model.TaskGroup;
 import io.github.mat3.applicationtodo.model.TaskGroupRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -74,16 +78,20 @@ class ProjectServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("ID not found");
     }
+
     @Test
     @DisplayName("should create a new group from project")
-    void createGroup_configurationOk_existingProject_createsAndSavesGroup(){
+    void createGroup_configurationOk_existingProject_createsAndSavesGroup() {
         //given
         var mockRepository = mock(ProjectRepository.class);
         when(mockRepository.findById(anyInt())).thenReturn(Optional.empty());
         //and
+        TaskGroupRepository taskGroupRepo = inMemoryGroupRepository();
+        //and
         TaskConfigurationProperties mockConfig = ConfigurationReturning(true);
 
     }
+
 
     private TaskGroupRepository groupRepositoryReturning(boolean result) {
         var mockGroupRepository = mock(TaskGroupRepository.class);
@@ -97,5 +105,42 @@ class ProjectServiceTest {
         var mockConfig = mock(TaskConfigurationProperties.class);
         when(mockConfig.getTemplate()).thenReturn(mockTemplate);
         return mockConfig;
+    }
+
+    private TaskGroupRepository inMemoryGroupRepository() {
+        return new TaskGroupRepository() {
+            private int index = 0;
+            private Map<Integer, TaskGroup> map;
+
+            @Override
+            public List<TaskGroup> findAll() {
+                return new ArrayList<>(map.values());
+            }
+
+            @Override
+            public Optional<TaskGroup> findById(Integer id) {
+                return Optional.ofNullable(map.get(id));
+            }
+
+            @Override
+            public TaskGroup save(TaskGroup entity) {
+                if (entity.getId() == 0) {
+                    try {
+                        TaskGroup.class.getDeclaredField("id").set(entity, ++index);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                map.put(++index, entity);
+                return entity;
+            }
+
+            @Override
+            public boolean existsByDoneIsFalseAndProject_Id(Integer projectId) {
+                return map.values().stream()
+                        .filter(group ->!group.isDone())
+                        .anyMatch(group -> group.getProject() != null && group.getProject().getId() == projectId);
+            }
+        };
     }
 }
