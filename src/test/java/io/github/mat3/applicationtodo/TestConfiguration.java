@@ -4,6 +4,7 @@ import io.github.mat3.applicationtodo.model.Task;
 import io.github.mat3.applicationtodo.model.TaskRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import java.util.*;
 class TestConfiguration {
 
     @Bean
+    @Primary
     @Profile("integration")
     TaskRepository testRepo() {
         return new TaskRepository() {
