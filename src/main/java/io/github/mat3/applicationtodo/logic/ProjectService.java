@@ -1,8 +1,12 @@
 package io.github.mat3.applicationtodo.logic;
 
 import io.github.mat3.applicationtodo.TaskConfigurationProperties;
-import io.github.mat3.applicationtodo.model.*;
+import io.github.mat3.applicationtodo.model.Project;
+import io.github.mat3.applicationtodo.model.ProjectRepository;
+import io.github.mat3.applicationtodo.model.TaskGroupRepository;
 import io.github.mat3.applicationtodo.model.projection.GroupReadModel;
+import io.github.mat3.applicationtodo.model.projection.GroupTaskWriteModel;
+import io.github.mat3.applicationtodo.model.projection.GroupWriteModel;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,11 +15,13 @@ import java.util.stream.Collectors;
 public class ProjectService {
     private ProjectRepository repository;
     private TaskGroupRepository taskGroupRepository;
+    private TaskGroupService service;
     private TaskConfigurationProperties config;
 
-    public ProjectService(ProjectRepository repository, TaskGroupRepository taskGroupRepository, TaskConfigurationProperties config) {
+    public ProjectService(ProjectRepository repository, TaskGroupRepository taskGroupRepository, TaskGroupService service, TaskConfigurationProperties config) {
         this.repository = repository;
         this.taskGroupRepository = taskGroupRepository;
+        this.service = service;
         this.config = config;
     }
 
@@ -32,16 +38,20 @@ public class ProjectService {
         if (!config.getTemplate().isAllowMultipleTasks() && taskGroupRepository.existsByDoneIsFalseAndProject_Id(projectId)) {
             throw new IllegalStateException("Only one undone group from project is allowed");
         }
-        TaskGroup result = repository.findById(projectId)
+        return repository.findById(projectId)
                 .map(project -> {
-                    var targetGroup = new TaskGroup();
+                    var targetGroup = new GroupWriteModel();
                     targetGroup.setDescription(project.getDescription());
                     targetGroup.setTasks(project.getSteps().stream()
-                            .map(projectSteps -> new Task(projectSteps.getDescription(), deadline.plusDays(projectSteps.getDaysToDeadline())))
-                            .collect(Collectors.toSet()));
-                    targetGroup.setProject(project);
-                    return taskGroupRepository.save(targetGroup);
-                }).orElseThrow(()->new IllegalArgumentException("Project with given ID not found"));
-        return new GroupReadModel(result);
+                            .map(projectSteps -> {
+                                var task = new GroupTaskWriteModel();
+                                task.setDescription(projectSteps.getDescription());
+                                task.setDeadline(deadline.plusDays(projectSteps.getDaysToDeadline()));
+                                return task;
+                            })
+                            .collect(Collectors.toSet())
+                    );
+                    return service.createGroup(targetGroup);
+                }).orElseThrow(() -> new IllegalArgumentException("Project with given ID not found"));
     }
 }
