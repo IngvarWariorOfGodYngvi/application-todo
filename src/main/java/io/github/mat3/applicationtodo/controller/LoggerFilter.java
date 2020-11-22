@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component
-public class LoggerFilter implements Filter {
+class LoggerFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(LoggerFilter.class);
 
     @Override
