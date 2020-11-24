@@ -1,5 +1,6 @@
 package io.github.mat3.applicationtodo.logic;
 
+import io.github.mat3.applicationtodo.model.Project;
 import io.github.mat3.applicationtodo.model.TaskGroup;
 import io.github.mat3.applicationtodo.model.TaskGroupRepository;
 import io.github.mat3.applicationtodo.model.TaskRepository;
@@ -20,7 +21,11 @@ public class TaskGroupService {
     }
 
     public GroupReadModel createGroup(GroupWriteModel source) {
-        TaskGroup result = repository.save(source.toGroup());
+            return createGroup(source, null);
+    }
+
+    GroupReadModel createGroup(GroupWriteModel source, Project project) {
+        TaskGroup result = repository.save(source.toGroup(project));
         return new GroupReadModel(result);
     }
 
@@ -40,4 +45,5 @@ public class TaskGroupService {
         result.setDone(!result.isDone());
         repository.save(result);
     }
+
 }
