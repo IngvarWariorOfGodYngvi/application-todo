@@ -12,9 +12,7 @@ public class ProjectController {
 
     @GetMapping
     String showProjects(Model model) {
-        ProjectWriteModel projectToEdit = new ProjectWriteModel();
-        projectToEdit.setDescription("test");
-        model.addAttribute("project", projectToEdit);
+        model.addAttribute("project", new ProjectWriteModel());
         return "projects";
     }
 
