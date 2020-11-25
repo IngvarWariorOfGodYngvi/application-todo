@@ -35,7 +35,7 @@ public class ProjectController {
             @ModelAttribute("project") @Valid ProjectWriteModel current,
             BindingResult bindingResult,
             Model model) {
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "projects";
         }
         service.save(current);
